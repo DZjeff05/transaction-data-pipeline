@@ -1,0 +1,33 @@
+name: Level 1 CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: transactions
+          POSTGRES_USER: pipeline
+          POSTGRES_PASSWORD: pipeline
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pipeline -d transactions"
+          --health-interval 3s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgresql://pipeline:pipeline@localhost:5432/transactions
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e ".[dev]"
+      - run: pytest -q
