@@ -1,4 +1,4 @@
-"""CSV loading and command-line orchestration."""
+"""Chargement des CSV et orchestration en ligne de commande."""
 
 import argparse
 import csv
@@ -25,16 +25,16 @@ def run(input_dir: str | Path, database_url: str) -> int:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate and process transaction CSV files")
+    parser = argparse.ArgumentParser(description="Générer et traiter des fichiers CSV de transactions")
     parser.add_argument("--input-dir", default="data/incoming")
-    parser.add_argument("--generate", action="store_true", help="generate deterministic sample CSVs first")
+    parser.add_argument("--generate", action="store_true", help="générer d'abord des CSV d'exemple déterministes")
     parser.add_argument("--files", type=int, default=2)
     args = parser.parse_args()
     if args.generate:
         generate_csv(args.input_dir, args.files)
     database_url = os.environ.get("DATABASE_URL", "postgresql://pipeline:pipeline@localhost:5432/transactions")
     count = run(args.input_dir, database_url)
-    print(f"Inserted {count} new CSV file(s).")
+    print(f"{count} nouveau(x) fichier(s) CSV inséré(s).")
 
 
 if __name__ == "__main__":

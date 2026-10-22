@@ -1,4 +1,4 @@
-"""Pure transformations for transaction records."""
+"""Transformations pures des enregistrements de transaction."""
 
 from collections import defaultdict
 from decimal import Decimal
@@ -8,7 +8,7 @@ THRESHOLD = Decimal("5000.00")
 
 
 def process_transactions(rows: Iterable[Mapping[str, str]]) -> dict:
-    """Return normalized transactions and grouped totals without side effects."""
+    """Retourne les transactions normalisées et les totaux groupés sans effet de bord."""
     transactions = []
     sent_by_iban: dict[str, Decimal] = defaultdict(Decimal)
     sent_by_bank: dict[str, Decimal] = defaultdict(Decimal)

@@ -1,4 +1,4 @@
-"""Generate stable CSV inputs for repeatable local runs and CI."""
+"""Génération de fichiers CSV stables pour les exécutions locales et la CI."""
 
 import csv
 from pathlib import Path
@@ -26,7 +26,7 @@ ROWS = [
 
 
 def generate_csv(output_dir: str | Path, files: int = 2) -> list[Path]:
-    """Write deterministic files, each containing 5–10 transactions."""
+    """Écrit des fichiers déterministes contenant chacun de 5 à 10 transactions."""
     if files < 1:
         raise ValueError("files must be at least 1")
     directory = Path(output_dir)

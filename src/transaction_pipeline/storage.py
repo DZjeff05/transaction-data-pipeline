@@ -1,11 +1,10 @@
-"""PostgreSQL schema and idempotent transactional persistence."""
+"""Schéma PostgreSQL et persistance transactionnelle idempotente."""
 
 import hashlib
 import time
 from pathlib import Path
 
 import psycopg
-from psycopg import errors
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS processed_files (
@@ -47,7 +46,7 @@ def initialize_database(database_url: str) -> None:
 
 
 def persist_file(database_url: str, path: str | Path, result: dict, retries: int = 3) -> bool:
-    """Persist one file atomically; return False if this exact content was handled."""
+    """Enregistre un fichier atomiquement ; retourne False si son contenu est déjà traité."""
     path = Path(path)
     digest = hashlib.sha256(path.read_bytes()).hexdigest()
     for attempt in range(retries):
@@ -71,10 +70,11 @@ def persist_file(database_url: str, path: str | Path, result: dict, retries: int
                     ("sent_by_bank", "bank", result["sent_by_bank"]),
                     ("received_by_iban", "iban", result["received_by_iban"]),
                 ):
-                    connection.executemany(
-                        f"INSERT INTO {table}(file_hash,{key},total) VALUES (%s,%s,%s)",
-                        [(digest, group, total) for group, total in values.items()],
-                    )
+                    with connection.cursor() as cursor:
+                        cursor.executemany(
+                            f"INSERT INTO {table}(file_hash,{key},total) VALUES (%s,%s,%s)",
+                            [(digest, group, total) for group, total in values.items()],
+                        )
             return True
         except (psycopg.OperationalError, psycopg.InterfaceError):
             if attempt + 1 == retries:

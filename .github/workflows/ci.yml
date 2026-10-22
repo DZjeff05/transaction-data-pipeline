@@ -1,4 +1,4 @@
-name: Level 1 CI
+name: CI — niveau 1
 
 on:
   push:
@@ -30,10 +30,10 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: python -m pip install -e ".[dev]"
-      - name: Generate CSV and run the pipeline
+      - name: Générer les CSV et exécuter la pipeline
         run: transaction-pipeline --generate --input-dir data/ci
       - run: pytest -q
-      - name: Keep generated transaction CSVs
+      - name: Conserver les CSV de transactions générés
         if: always()
         uses: actions/upload-artifact@v4
         with:

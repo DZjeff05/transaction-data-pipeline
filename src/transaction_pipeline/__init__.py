@@ -1,1 +1,1 @@
-"""Deterministic financial transaction pipeline."""
+"""Pipeline déterministe de traitement de transactions financières."""
