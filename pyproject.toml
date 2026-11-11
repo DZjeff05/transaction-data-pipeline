@@ -7,7 +7,7 @@ name = "transaction-pipeline"
 version = "0.1.0"
 description = "Pipeline CI de traitement de transactions financières — niveau 1"
 requires-python = ">=3.11"
-dependencies = ["psycopg[binary]>=3.2,<4"]
+dependencies = ["psycopg[binary]>=3.2,<4", "boto3>=1.35,<2"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<9"]

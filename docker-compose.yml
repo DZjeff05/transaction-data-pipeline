@@ -1,4 +1,32 @@
 services:
+  rustfs-permissions:
+    image: alpine:3.20
+    user: root
+    command: ["sh", "-c", "chown -R 10001:10001 /data"]
+    volumes:
+      - rustfs_data:/data
+    restart: "no"
+
+  rustfs:
+    image: rustfs/rustfs:1.0.5
+    depends_on:
+      rustfs-permissions:
+        condition: service_completed_successfully
+    environment:
+      RUSTFS_VOLUMES: /data/rustfs0
+      RUSTFS_ADDRESS: 0.0.0.0:9000
+      RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_ACCESS_KEY: pipeline-access
+      RUSTFS_SECRET_KEY: pipeline-secret-local
+      RUSTFS_OBS_LOGGER_LEVEL: info
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - rustfs_data:/data
+    restart: unless-stopped
+
   postgres:
     image: postgres:16-alpine
     environment:
@@ -17,3 +45,4 @@ services:
 
 volumes:
   postgres_data:
+  rustfs_data:

@@ -1,4 +1,4 @@
-name: CI — niveau 1
+name: CI — niveaux 1 et 2
 
 on:
   push:
@@ -23,6 +23,10 @@ jobs:
           --health-retries 20
     env:
       DATABASE_URL: postgresql://pipeline:pipeline@localhost:5432/transactions
+      S3_ENDPOINT_URL: http://localhost:9000
+      S3_ACCESS_KEY: pipeline-access
+      S3_SECRET_KEY: pipeline-secret-local
+      S3_BUCKET: transactions
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -30,8 +34,10 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: python -m pip install -e ".[dev]"
-      - name: Générer les CSV et exécuter la pipeline
-        run: transaction-pipeline --generate --input-dir data/ci
+      - name: Démarrer RustFS
+        run: docker compose up -d rustfs
+      - name: Générer les CSV, les envoyer dans RustFS et exécuter la pipeline
+        run: transaction-pipeline --generate --storage s3 --input-dir data/ci
       - run: pytest -q
       - name: Conserver les CSV de transactions générés
         if: always()
