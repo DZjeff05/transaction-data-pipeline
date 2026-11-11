@@ -1,10 +1,13 @@
 """Schéma PostgreSQL et persistance transactionnelle idempotente."""
 
 import hashlib
+import logging
 import time
 from pathlib import Path
 
 import psycopg
+
+logger = logging.getLogger(__name__)
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS processed_files (
@@ -77,6 +80,12 @@ def persist_file(database_url: str, path: str | Path, result: dict, retries: int
                         )
             return True
         except (psycopg.OperationalError, psycopg.InterfaceError):
+            logger.warning(
+                "Échec temporaire de connexion lors de l'insertion de %s (tentative %s/%s).",
+                path.name,
+                attempt + 1,
+                retries,
+            )
             if attempt + 1 == retries:
                 raise
             time.sleep(0.25 * (2 ** attempt))

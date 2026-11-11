@@ -14,7 +14,7 @@ docker compose up -d postgres
 transaction-pipeline --generate
 ```
 
-La configuration locale par défaut est `postgresql://pipeline:pipeline@localhost:5432/transactions`. Elle peut être remplacée avec `DATABASE_URL`.
+La configuration locale par défaut est `postgresql://pipeline:pipeline@localhost:5433/transactions`. Elle peut être remplacée avec `DATABASE_URL`.
 
 Les mêmes fichiers peuvent être rejoués sans doublonner : leur SHA-256 est enregistré dans `processed_files` et les données, agrégats compris, sont insérés dans une transaction PostgreSQL. Les erreurs de connexion sont réessayées jusqu'à trois fois avec attente progressive.
 

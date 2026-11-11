@@ -28,11 +28,18 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Générer et traiter des fichiers CSV de transactions")
     parser.add_argument("--input-dir", default="data/incoming")
     parser.add_argument("--generate", action="store_true", help="générer d'abord des CSV d'exemple déterministes")
+    parser.add_argument("--generate-only", action="store_true", help="générer les CSV sans lancer leur traitement")
     parser.add_argument("--files", type=int, default=2)
     args = parser.parse_args()
+    if args.generate_only:
+        args.generate = True
     if args.generate:
-        generate_csv(args.input_dir, args.files)
-    database_url = os.environ.get("DATABASE_URL", "postgresql://pipeline:pipeline@localhost:5432/transactions")
+        generated = generate_csv(args.input_dir, args.files)
+        for path in generated:
+            print(f"CSV généré : {path}")
+    if args.generate_only:
+        return
+    database_url = os.environ.get("DATABASE_URL", "postgresql://pipeline:pipeline@localhost:5433/transactions")
     count = run(args.input_dir, database_url)
     print(f"{count} nouveau(x) fichier(s) CSV inséré(s).")
 
